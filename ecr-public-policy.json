@@ -1,0 +1,16 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecr-public:GetAuthorizationToken",
+        "ecr-public:BatchCheckLayerAvailability",
+        "ecr-public:GetDownloadUrlForLayer",
+        "ecr-public:BatchGetImage",
+        "sts:GetServiceBearerToken"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

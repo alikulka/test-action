@@ -1,0 +1,45 @@
+name: Reproduce ECR Login Issue
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+env:
+  AWS_DEFAULT_REGION: us-east-1
+
+jobs:
+  reproduce-issue:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install boto3 docker
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          role-session-name: aws-oidc-test-${{ github.run_id }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
+      - name: Login to AWS ECR Public Registry (working method)
+        id: login-ecr-public
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          registry-type: public
+
+      - name: Reproduce Python ECR login issue
+        run: python3 reproduce_ecr_login_issue.py
